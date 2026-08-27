@@ -186,14 +186,18 @@ extension UsageMenuCardView.Model {
         } else {
             L("%@ cost", historyDays == 1 ? L("Today") : String(format: L("Last %d days"), historyDays))
         }
-        let points = snapshot.daily.suffix(historyDays).compactMap { entry -> InlineUsageDashboardModel.Point? in
-            guard let cost = entry.costUSD else { return nil }
-            return InlineUsageDashboardModel.Point(
-                id: entry.date,
-                label: Self.shortDayLabel(entry.date),
-                value: convertedValue(cost),
-                accessibilityValue: "\(entry.date): \(convertedString(cost))")
-        }
+        let points = Self.inlineCostHistoryDays(
+            snapshot: snapshot,
+            historyDays: historyDays,
+            fillsMissingCalendarDays: tokenCost.fillsMissingCalendarDaysInCharts)
+            .compactMap { day -> InlineUsageDashboardModel.Point? in
+                guard let cost = day.costUSD else { return nil }
+                return InlineUsageDashboardModel.Point(
+                    id: day.date,
+                    label: Self.shortDayLabel(day.date),
+                    value: convertedValue(cost),
+                    accessibilityValue: "\(day.date): \(convertedString(cost))")
+            }
         let latest = CostUsageTokenSnapshot.latestEntry(in: snapshot.daily)
         let usesLatestPrimary = tokenCost.primaryValue == .latestDaily
         let primaryCostUSD = usesLatestPrimary ? latest?.costUSD : snapshot.sessionCostUSD
@@ -332,6 +336,43 @@ extension UsageMenuCardView.Model {
         let pieces = day.split(separator: "-")
         guard pieces.count == 3, let rawDay = Int(pieces[2]) else { return day }
         return "\(rawDay)"
+    }
+
+    private static func inlineCostHistoryDays(
+        snapshot: CostUsageTokenSnapshot,
+        historyDays: Int,
+        fillsMissingCalendarDays: Bool,
+        calendar sourceCalendar: Calendar = .current)
+        -> [(date: String, costUSD: Double?)]
+    {
+        let existingDays = snapshot.daily.suffix(historyDays).map { (date: $0.date, costUSD: $0.costUSD) }
+        guard fillsMissingCalendarDays else { return existingDays }
+
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = sourceCalendar.timeZone
+        let endDate = calendar.startOfDay(for: snapshot.updatedAt)
+        guard let startDate = calendar.date(byAdding: .day, value: -(historyDays - 1), to: endDate) else {
+            return existingDays
+        }
+
+        let entriesByDay = Dictionary(snapshot.daily.map { ($0.date, $0) }, uniquingKeysWith: { _, newer in newer })
+        return (0..<historyDays).compactMap { offset in
+            guard let date = calendar.date(byAdding: .day, value: offset, to: startDate) else { return nil }
+            let dayKey = Self.inlineCostHistoryDayKey(date, calendar: calendar)
+            if let entry = entriesByDay[dayKey] {
+                return (date: dayKey, costUSD: entry.costUSD)
+            }
+            return (date: dayKey, costUSD: 0)
+        }
+    }
+
+    private static func inlineCostHistoryDayKey(_ date: Date, calendar: Calendar) -> String {
+        let components = calendar.dateComponents([.year, .month, .day], from: date)
+        return String(
+            format: "%04d-%02d-%02d",
+            components.year ?? 0,
+            components.month ?? 0,
+            components.day ?? 0)
     }
 
     private static func shortModelName(_ name: String) -> String {
