@@ -1443,6 +1443,7 @@
 "More" = "Più";
 
 /* Provider Plugins */
+"Plugins" = "Plugins";
 "Install…" = "Installa…";
 "Install plugin" = "Installa plugin";
 "Copies a JavaScript or TypeScript file into the plugins directory." = "Copia un file JavaScript o TypeScript nella cartella dei plugin.";
@@ -1538,3 +1539,4 @@
 "menu_bar_layout_conditional_default_session_spent" = "Sessione quasi esaurita";
 "menu_bar_layout_conditional_default_either_high" = "Sessione o settimana a livello alto";
 "menu_bar_layout_conditional_default_scoped_weekly" = "Settimana per modello oltre il 60%";
+"Spending cap, not balance" = "Limite di spesa, non saldo";

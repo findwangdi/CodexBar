@@ -1439,6 +1439,7 @@
 "More" = "Meer";
 
 /* Provider Plugins */
+"Plugins" = "Plugins";
 "Install…" = "Installeren…";
 "Install plugin" = "Plug-in installeren";
 "Copies a JavaScript or TypeScript file into the plugins directory." = "Kopieert een JavaScript- of TypeScript-bestand naar de map met plug-ins.";
@@ -1534,3 +1535,4 @@
 "menu_bar_layout_conditional_default_session_spent" = "Sessie bijna verbruikt";
 "menu_bar_layout_conditional_default_either_high" = "Sessie of week loopt hoog op";
 "menu_bar_layout_conditional_default_scoped_weekly" = "Modelweek boven 60% gebruikt";
+"Spending cap, not balance" = "Uitgavenlimiet, geen saldo";

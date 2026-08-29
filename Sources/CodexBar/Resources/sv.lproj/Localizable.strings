@@ -1438,6 +1438,7 @@
 "More" = "Mer";
 
 /* Provider Plugins */
+"Plugins" = "Plugins";
 "Install…" = "Installera…";
 "Install plugin" = "Installera plugin";
 "Copies a JavaScript or TypeScript file into the plugins directory." = "Kopierar en JavaScript- eller TypeScript-fil till pluginmappen.";
@@ -1534,3 +1535,4 @@
 "menu_bar_layout_conditional_default_session_spent" = "Sessionen nästan förbrukad";
 "menu_bar_layout_conditional_default_either_high" = "Session eller vecka ligger högt";
 "menu_bar_layout_conditional_default_scoped_weekly" = "Modellvecka över 60 % använt";
+"Spending cap, not balance" = "Utgiftstak, inte saldo";

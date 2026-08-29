@@ -1443,6 +1443,7 @@
 "More" = "Banyak";
 
 /* Provider Plugins */
+"Plugins" = "Plugins";
 "Install…" = "Pasang…";
 "Install plugin" = "Pasang plugin";
 "Copies a JavaScript or TypeScript file into the plugins directory." = "Menyalin file JavaScript atau TypeScript ke direktori plugin.";
@@ -1538,3 +1539,4 @@
 "menu_bar_layout_conditional_default_session_spent" = "Sesi hampir habis";
 "menu_bar_layout_conditional_default_either_high" = "Sesi atau mingguan sedang tinggi";
 "menu_bar_layout_conditional_default_scoped_weekly" = "Mingguan per model di atas 60%";
+"Spending cap, not balance" = "Batas pengeluaran, bukan saldo";

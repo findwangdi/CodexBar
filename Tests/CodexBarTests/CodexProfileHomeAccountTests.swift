@@ -202,6 +202,28 @@ struct CodexProfileHomeAccountTests {
 
     @Test
     @MainActor
+    func `provider details chart uses the pinned cost bucket calendar`() throws {
+        let fixture = try Self.makeProfileHomeCostFixture(suite: "CodexProfileHomeAccountTests-chart-calendar")
+        defer { fixture.cleanup() }
+        fixture.settings.costUsageBucketTimeZoneIdentifier = "Pacific/Kiritimati"
+        let now = try #require(ISO8601DateFormatter().date(from: "2026-08-24T12:30:00Z"))
+        let snapshot = CostUsageTokenSnapshot(
+            sessionTokens: 100,
+            sessionCostUSD: 3,
+            last30DaysTokens: 100,
+            last30DaysCostUSD: 3,
+            historyDays: 1,
+            daily: [InlineCostCalendarFixture.entry("2026-08-25", cost: 3)],
+            updatedAt: now)
+        fixture.store._setTokenSnapshotForTesting(snapshot, provider: .codex)
+        let model = ProvidersPane(settings: fixture.settings, store: fixture.store)
+            ._test_menuCardModel(for: .codex)
+        #expect(model.inlineUsageDashboard?.points.map(\.id) == ["2026-08-25"])
+        #expect(model.inlineUsageDashboard?.points.map(\.value) == [3])
+    }
+
+    @Test
+    @MainActor
     func `ambient codex ledger remains visible when profile home selection changes`() throws {
         let fixture = try Self.makeProfileHomeCostFixture(
             suite: "CodexProfileHomeAccountTests-ambient-ledger",

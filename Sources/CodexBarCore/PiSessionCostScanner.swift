@@ -66,12 +66,6 @@ enum PiSessionCostScanner {
         let catalog: ModelsDevCatalog?
         let cacheRoot: URL?
         let pricingKey: String
-        let compatiblePricingKey: String?
-
-        func matches(_ key: String?) -> Bool {
-            guard let key else { return false }
-            return key == self.pricingKey || key == self.compatiblePricingKey
-        }
     }
 
     private struct ScanContext {
@@ -132,7 +126,7 @@ enum PiSessionCostScanner {
         let refreshMs = Int64(max(0, options.refreshMinIntervalSeconds) * 1000)
         let pricingContext = self.pricingContext(now: now, cacheRoot: options.cacheRoot)
         let windowExpanded = self.requestedWindowExpandsCache(range: range, cache: cache)
-        let pricingChanged = !pricingContext.matches(cache.pricingKey)
+        let pricingChanged = cache.pricingKey != pricingContext.pricingKey
         let shouldRefresh = options.forceRescan
             || windowExpanded
             || pricingChanged
@@ -242,7 +236,7 @@ enum PiSessionCostScanner {
         guard !self.requestedWindowExpandsCache(range: range, cache: cache) else { return nil }
 
         let pricingContext = self.pricingContext(now: now, cacheRoot: cacheRoot)
-        guard pricingContext.matches(cache.pricingKey) else { return nil }
+        guard cache.pricingKey == pricingContext.pricingKey else { return nil }
         let report = self.buildReport(
             provider: provider,
             cache: cache,
@@ -258,25 +252,16 @@ enum PiSessionCostScanner {
     private static func pricingContext(now: Date, cacheRoot: URL?) -> ModelsDevPricingContext {
         let modelsDevArtifact = ModelsDevCache.load(now: now, cacheRoot: cacheRoot).artifact
         let customPricingFingerprint = CostUsageCustomPricing.load().fingerprint
-        func key(parserHash: String) -> String {
-            CostUsagePricingKey.codex(
-                modelsDevArtifact: modelsDevArtifact,
-                formulaVersion: Self.costFormulaVersion,
-                parserHash: parserHash,
-                modelsDevProviderIDs: CostUsagePricing.codexModelsDevProviderIDs.union(
-                    Set(CostUsagePricing.claudeFirstPartyModelsDevProviderIDs)),
-                customPricingFingerprint: customPricingFingerprint)
-        }
-        // Only the scheduler-only transition may reuse the predecessor's identical pricing inputs.
-        // A later parser change must invalidate normally unless separately reviewed for compatibility.
-        let compatiblePricingKey = CodexParserHash.value == "55f640e6bb0ccba4"
-            ? key(parserHash: "c6c46a376ba16304")
-            : nil
         return ModelsDevPricingContext(
             catalog: modelsDevArtifact?.catalog,
             cacheRoot: cacheRoot,
-            pricingKey: key(parserHash: CodexParserHash.value),
-            compatiblePricingKey: compatiblePricingKey)
+            pricingKey: CostUsagePricingKey.codex(
+                modelsDevArtifact: modelsDevArtifact,
+                formulaVersion: Self.costFormulaVersion,
+                parserHash: CodexParserHash.value,
+                modelsDevProviderIDs: CostUsagePricing.codexModelsDevProviderIDs.union(
+                    Set(CostUsagePricing.claudeFirstPartyModelsDevProviderIDs)),
+                customPricingFingerprint: customPricingFingerprint))
     }
 
     private static func requestedWindowExpandsCache(

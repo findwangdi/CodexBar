@@ -1443,6 +1443,7 @@
 "More" = "มาก";
 
 /* Provider Plugins */
+"Plugins" = "Plugins";
 "Install…" = "ติดตั้ง…";
 "Install plugin" = "ติดตั้งปลั๊กอิน";
 "Copies a JavaScript or TypeScript file into the plugins directory." = "คัดลอกไฟล์ JavaScript หรือ TypeScript ไปยังโฟลเดอร์ปลั๊กอิน";
@@ -1539,3 +1540,4 @@
 "menu_bar_layout_conditional_default_session_spent" = "เซสชันเกือบหมด";
 "menu_bar_layout_conditional_default_either_high" = "เซสชันหรือรายสัปดาห์อยู่ในระดับสูง";
 "menu_bar_layout_conditional_default_scoped_weekly" = "รายสัปดาห์ตามโมเดลเกิน 60%";
+"Spending cap, not balance" = "เพดานการใช้จ่าย ไม่ใช่ยอดคงเหลือ";
